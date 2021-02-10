@@ -80,11 +80,57 @@ function moveImages(e) {
     })
 }
 
-function init(){
-    
+function initHoverReveal() {
+    const sections = document.querySelectorAll('.rg__column');
+    sections.forEach(section => {
+        section.imageBlock = section.querySelector('.rg__image');
+        section.mask = section.querySelector('.rg__image--mask');
+        section.text = section.querySelector('.rg__text');
+        section.textCopy = section.querySelector('.rg__text--copy')
+
+        gsap.set(section.imageBlock, { yPercent: -101})
+        gsap.set(section.mask, { yPercent: 100})
+
+        section.addEventListener('mouseenter', createHoverReveal)
+        section.addEventListener('mouseleave', createHoverReveal)
+    })
+}
+
+function getTextHeight(textCopy) {
+    return textCopy.clientHeight;
+}
+
+function createHoverReveal(e) {
+    const { mask, imageBlock, text, textCopy } = e.target;
+
+    let tl = gsap.timeline({
+        defaults: {
+            duration: 0.7,
+            ease: 'Power4.out'
+        }
+    })
+
+    if (e.type === 'mouseenter') {
+        tl
+        .to([mask, imageBlock], {yPercent: 0})
+        .to(text, {y: () => -getTextHeight(textCopy)/2})
+    } else if (e.type === 'mouseleave') {
+        tl
+        .to(mask, {yPercent: 0})  
+        .to(imageBlock, {yPercent: -101}, 0)
+        .to(text, {y: 0})
+    }
+
+    return tl
+}
+
+
+
+function init(){ 
     // start here
     initNavigation()
     initHeaderTilt()
+    initHoverReveal()
 }
 
 window.addEventListener('load', function(){
